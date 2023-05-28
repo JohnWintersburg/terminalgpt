@@ -4,6 +4,7 @@ const configuration = new Configuration({
   apiKey: '',
 });
 const openai = new OpenAIApi(configuration);
+const sayToGpt = process.argv[2];
 
 async function request() {
     try {
@@ -12,16 +13,17 @@ async function request() {
         messages: [
           {
             role: "user",
-            content: "Hello world"
+            content: sayToGpt
           }
         ]
       });
   
       const { data } = completion;
-      console.log(data.choices[0].text);
+      console.log(data.choices[0].message.content);
     } catch (error) {
       if (error.response && error.response.status === 429) {
         const retryAfter = 61;
+        //console.log(error.response.status);
         console.log(error.response.statusText);
         console.log(`Rate limit exceeded. Retrying after ${retryAfter} seconds...`);
         setTimeout(request, retryAfter * 1000);
